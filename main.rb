@@ -3,7 +3,8 @@ include NetworkUtils
 
 config = {
     polling_interval: 2,
-    timeout: 1
+    dns_timeout: 1,
+    ping_timeout: 1,
 }
 
 hosts = [

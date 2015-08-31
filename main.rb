@@ -3,34 +3,37 @@ include NetworkUtils
 
 semaphore = Mutex.new
 
+# Initialise configuration
+
 config = {
-    polling_interval: 2,
-    refresh_interval: 15,
-    dns_timeout: 1,
-    ping_timeout: 1,
+    polling_interval: 3,
+    refresh_interval: 15
 }
 
 hosts = [
-    { id: '1', type: 'ICMP', node: 'google.com', port: '80', status: 'offline' },
-    { id: '2', type: 'ICMP', node: 'test.com', port: '80', status: 'offline' }
+    { id: '1', type: 'ICMP', node: 'google.com', port: '80', status: '', timeout: 1 },
+    { id: '2', type: 'ICMP', node: 'bing.com', port: '80', status: '', timeout: 1 },
+    { id: '3', type: 'ICMP', node: 'asdf.com', port: '80', status: '', timeout: 1 },
+    { id: '4', type: 'ICMP', node: 'ubuntu.com', port: '80', status: '', timeout: 1 },
+    { id: '5', type: 'ICMP', node: 'yahoo.com', port: '80', status: '', timeout: 1 }
 ]
+
+NetworkUtils.resolve_nodes(hosts)
 
 timer = Thread.new { 
     while true
         sleep config[:refresh_interval]
         semaphore.synchronize {
-            puts "hi"
+            # Refresh configuration
+            NetworkUtils.resolve_nodes( hosts.select { |host| host[:status] == 'dns_error'  } )
         }
     end
 }
-
-NetworkUtils.resolve_nodes(hosts)
 
 while true
     sleep config[:polling_interval]
     semaphore.synchronize {
         NetworkUtils.ping_nodes(hosts)
-        NetworkUtils.resolve_nodes( hosts.select { |host| host[:status] == 'dns_error'  } )
         puts hosts
     }
 end

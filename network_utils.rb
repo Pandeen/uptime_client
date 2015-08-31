@@ -22,8 +22,8 @@ module NetworkUtils
         threads.each { |thread|  thread.join }
     end
     
-    def ping_node(hostname)
-        return Net::Ping::ICMP.new(hostname).ping?
+    def ping_node(hostname, timeout)
+        return Net::Ping::ICMP.new(hostname, nil, timeout).ping?
     end
     
     def ping_http
@@ -36,7 +36,7 @@ module NetworkUtils
             threads << Thread.new(node) do |host|
                 if host[:node] && host[:status] != 'dns_error'
                     if host[:type] == 'ICMP'
-                        if ping_node(host[:node])
+                        if ping_node(host[:node], host[:timeout])
                             host[:status] = 'online'
                         else
                             host[:status] = 'offline'

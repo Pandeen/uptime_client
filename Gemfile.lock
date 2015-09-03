@@ -1,12 +1,18 @@
 GEM
   remote: https://rubygems.org/
   specs:
+    ffi (1.9.10)
+    ffi (1.9.10-x86-mingw32)
     net-dns (0.8.0)
     net-ping (1.7.7)
+    win32-security (0.3.1)
+      ffi
 
 PLATFORMS
   ruby
+  x86-mingw32
 
 DEPENDENCIES
   net-dns
   net-ping
+  win32-security

@@ -1,57 +1,44 @@
 require './network_utils.rb'
+require './client_config.rb'
+require './data.rb'
 
 include NetworkUtils
 
-# Initialize configuration
+# Objects
+semaphore = Mutex.new
+config = ClientConfig.new
+data = ClientData.new
 
-=begin
-config = {
-    polling_interval: 3,
-    refresh_interval: 15
-}
-
-hosts = [
-    { id: '1', type: 'ICMP', node: 'google.com', port: '80', status: '', timeout: 1 },
-    { id: '2', type: 'ICMP', node: 'bing.com', port: '80', status: '', timeout: 1 },
-    { id: '3', type: 'ICMP', node: 'asdf.com', port: '80', status: '', timeout: 1 },
-    { id: '4', type: 'ICMP', node: 'ubuntu.com', port: '80', status: '', timeout: 1 },
-    { id: '5', type: 'ICMP', node: 'yahoo.com', port: '80', status: '', timeout: 1 }
-]
-=end
-
-config = new Config
-data = new Data
-
+# Refresh the client configuration and data every 10 seconds
 config_thread = Thread.new {
 	while true
-		is_initialized = config.initialized?
+		config.initialize
+		data.initialize
 		sleep 10
 	end
 }
 
 while true
 
-	if is_initialized
+	if config.initialized?
 
-		semaphore = Mutex.new
-
-		NetworkUtils.resolve_nodes(hosts)
+		NetworkUtils.resolve_nodes(data.hosts)
 
 		timer = Thread.new { 
-			while is_initialized
+			while config.initialized?
 				sleep config[:refresh_interval]
 				semaphore.synchronize {
 					# Refresh configuration
-					NetworkUtils.resolve_nodes( hosts.select { |host| host[:status] == 'dns_error'  } )
+					NetworkUtils.resolve_nodes( data.hosts.select { |host| host[:status] == 'dns_error'  } )
 				}
 			end
 		}
 
-		while is_initialized
+		while config.initialized?
 			sleep config[:polling_interval]
 			semaphore.synchronize {
-				NetworkUtils.ping_nodes(hosts)
-				puts hosts
+				NetworkUtils.ping_nodes(data.hosts)
+				puts data.hosts
 			}
 		end
 	else

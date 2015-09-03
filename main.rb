@@ -1,10 +1,8 @@
 require './network_utils.rb'
-require './config_utils.rb'
 
 include NetworkUtils
-include ConfigUtils
 
-# Initialise configuration
+# Initialize configuration
 
 =begin
 config = {
@@ -21,9 +19,12 @@ hosts = [
 ]
 =end
 
-config = Thread.new {
+config = new Config
+data = new Data
+
+config_thread = Thread.new {
 	while true
-		is_initialized = ConfigUtils.initialize
+		is_initialized = config.initialized?
 		sleep 10
 	end
 }

@@ -4,7 +4,9 @@ require 'net/dns'
 module NetworkUtils
     
     def resolve_node(hostname)
-        dns_answer = Net::DNS::Resolver.start(hostname)
+		resolver = Net::DNS::Resolver.new
+		resolver.nameservers = ['8.8.8.8']
+        dns_answer = resolver.search(hostname)
         return dns_answer.answer[0].address.to_s if dns_answer.answer[0]
     end
     

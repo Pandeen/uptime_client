@@ -3,6 +3,7 @@ require './api_utils'
 include ApiUtils
 
 class ClientData
+	attr_accessor :hosts
 	
 	def initialize
 		@hosts = [
@@ -12,10 +13,6 @@ class ClientData
 			{ id: '4', type: 'ICMP', node: 'ubuntu.com', port: '80', status: '', timeout: 1 },
 			{ id: '5', type: 'ICMP', node: 'yahoo.com', port: '80', status: '', timeout: 1 }
 		]
-	end
-	
-	def hosts
-		@hosts
 	end
 	
 end

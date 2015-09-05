@@ -26,7 +26,7 @@ while true
 
 		timer = Thread.new { 
 			while config.initialized?
-				sleep config[:refresh_interval]
+				sleep config.refresh_interval
 				semaphore.synchronize {
 					# Refresh configuration
 					NetworkUtils.resolve_nodes( data.hosts.select { |host| host[:status] == 'dns_error'  } )
@@ -35,7 +35,7 @@ while true
 		}
 
 		while config.initialized?
-			sleep config[:polling_interval]
+			sleep config.polling_interval
 			semaphore.synchronize {
 				NetworkUtils.ping_nodes(data.hosts)
 				puts data.hosts

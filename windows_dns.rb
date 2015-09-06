@@ -1,5 +1,20 @@
 module WindowsDns
 
+	public
+
+	def get_windows_nameservers
+		# Retrieve all connected interfaces
+		connected_interfaces = get_windows_connected_interfaces
+		# Get IP and nameserver data for those interfaces
+		data = get_interfaces_data(connected_interfaces)
+		# Retrieve the first default route
+		default_routes = get_windows_default_routes
+		default_route = default_routes.first
+		# Marry the first default route and the appropriate interface data. This is likely the active link
+		active_interface = data.find { |k| k[:ip_address] == default_route[:interface]}
+		return active_interface[:nameservers]
+	end
+
 	private
 
 	def get_windows_default_routes
@@ -84,18 +99,4 @@ module WindowsDns
 		return interface_data
 	end
 	
-	public
-
-	def get_windows_nameservers
-		# Retrieve all connected interfaces
-		connected_interfaces = get_windows_connected_interfaces
-		# Get IP and nameserver data for those interfaces
-		data = get_interfaces_data(connected_interfaces)
-		# Retrieve the first default route
-		default_routes = get_windows_default_routes
-		default_route = default_routes.first
-		# Marry the first default route and the appropriate interface data. This is likely the active link
-		active_interface = data.find { |k| k[:ip_address] == default_route[:interface]}
-		return active_interface[:nameservers]
-	end
 end
